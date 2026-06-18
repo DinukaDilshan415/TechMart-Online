@@ -10,6 +10,8 @@
         <class>me.dinuka.tmo.entity.City</class>
         <class>me.dinuka.tmo.entity.User</class>
         <class>me.dinuka.tmo.entity.Status</class>
+        <class>me.dinuka.tmo.entity.AdminRole</class>
+        <class>me.dinuka.tmo.entity.Admin</class>
 
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
