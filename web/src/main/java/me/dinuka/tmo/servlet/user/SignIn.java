@@ -6,6 +6,8 @@ package me.dinuka.tmo.servlet.user;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -18,6 +20,9 @@ import java.util.List;
 
 @WebServlet("/SignIn")
 public class SignIn extends HttpServlet {
+
+    @PersistenceContext(unitName = "TechMartPU")
+    private EntityManager session;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -35,10 +40,9 @@ public class SignIn extends HttpServlet {
         } else if (password.isEmpty()) {
             ResponseObject.addProperty("message", "Please Enter Your Password");
         } else {
-            Session session = HibernateUtil.getSessionFactory().openSession();
 
             List<User> users = session.createQuery(
-                            "from User where email = :email and password = :password", User.class)
+                            "SELECT u FROM User u WHERE u.email = :email AND u.password = :password", User.class)
                     .setParameter("email", email)
                     .setParameter("password", password)
                     .getResultList();
@@ -68,7 +72,6 @@ public class SignIn extends HttpServlet {
 
                 ResponseObject.addProperty("status", true);
             }
-            session.close();
         }
         String responseText = gson.toJson(ResponseObject);
         response.setContentType("application/json");
