@@ -13,5 +13,7 @@
         <property name="hibernate.show_sql">true</property>
 
         <mapping class="me.dinuka.tmo.entity.City"/>
+        <mapping class="me.dinuka.tmo.entity.User"/>
+        <mapping class="me.dinuka.tmo.entity.Status"/>
     </session-factory>
 </hibernate-configuration>
