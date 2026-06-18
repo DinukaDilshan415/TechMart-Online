@@ -1,6 +1,8 @@
 package me.dinuka.tmo;
 
 import jakarta.ejb.Stateless;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import me.dinuka.tmo.dto.UserDTO;
 import me.dinuka.tmo.entity.Status;
 import me.dinuka.tmo.entity.User;
@@ -12,18 +14,21 @@ import me.dinuka.tmo.util.mailer.MailTemplates;
 import org.hibernate.Session;
 
 import java.util.Date;
+import java.util.List;
 
 @Stateless
 public class UserSessionBean implements UserService {
+
+    @PersistenceContext(unitName = "TechMartPU")
+    private EntityManager session;
+
     @Override
     public String save(UserDTO userDTO) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
 
-        User user = session.createQuery("FROM User u WHERE u.email=:email", User.class)
-                .setParameter("email", userDTO.getEmail())
-                .getSingleResultOrNull();
+        List<User> users = session.createQuery("FROM User u WHERE u.email=:email", User.class)
+                .setParameter("email", userDTO.getEmail()).getResultList();
 
-        if (user != null) {
+        if (!users.isEmpty()) {
             return "email-exists";
         } else {
 
@@ -38,12 +43,11 @@ public class UserSessionBean implements UserService {
             u.setVerification_code(verificationCode);
             u.setCreated_at(new Date());
 
-            Status status = session.get(Status.class,1);
+            Status status = session.getReference(Status.class, 1);
 
             u.setStatus(status);
 
             session.persist(u);
-            session.beginTransaction().commit();
 
             //send mail
             new Thread(new Runnable() {
@@ -52,7 +56,6 @@ public class UserSessionBean implements UserService {
                     Mail.sendMail(userDTO.getEmail(), "TechMartOnline Account Verification", new MailTemplates().accountVerifyMail(verificationCode));
                 }
             }).start();
-            session.close();
             return "success";
         }
     }
