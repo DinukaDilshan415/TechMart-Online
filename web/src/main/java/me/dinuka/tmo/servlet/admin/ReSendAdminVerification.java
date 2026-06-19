@@ -77,11 +77,13 @@ public class ReSendAdminVerification extends HttpServlet {
 
                 response.addCookie(sessionCookie);
 
+                System.out.println("Verification Code: " + verificationCode);
+
                 //send mail
 //                new Thread(new Runnable() {
 //                    @Override
 //                    public void run() {
-                Mail.sendMail(email, "Admin Account Verification", new MailTemplates().adminVerificationEmail(verificationCode));
+//                Mail.sendMail(email, "Admin Account Verification", new MailTemplates().adminVerificationEmail(verificationCode));
 //                    }
 //                }).start();
 
