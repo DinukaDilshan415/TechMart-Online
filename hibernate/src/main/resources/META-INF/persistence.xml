@@ -12,6 +12,21 @@
         <class>me.dinuka.tmo.entity.Status</class>
         <class>me.dinuka.tmo.entity.AdminRole</class>
         <class>me.dinuka.tmo.entity.Admin</class>
+        <class>me.dinuka.tmo.entity.Brand</class>
+        <class>me.dinuka.tmo.entity.Cart</class>
+        <class>me.dinuka.tmo.entity.Category</class>
+        <class>me.dinuka.tmo.entity.GiftAddress</class>
+        <class>me.dinuka.tmo.entity.Invoice</class>
+        <class>me.dinuka.tmo.entity.InvoiceItems</class>
+        <class>me.dinuka.tmo.entity.MainCategory</class>
+        <class>me.dinuka.tmo.entity.OrderStatus</class>
+        <class>me.dinuka.tmo.entity.Product</class>
+        <class>me.dinuka.tmo.entity.Ratings</class>
+        <class>me.dinuka.tmo.entity.Reviews</class>
+        <class>me.dinuka.tmo.entity.Stock</class>
+        <class>me.dinuka.tmo.entity.SubCategory</class>
+        <class>me.dinuka.tmo.entity.UserAddress</class>
+        <class>me.dinuka.tmo.entity.Warehouse</class>
 
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
