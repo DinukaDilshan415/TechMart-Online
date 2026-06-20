@@ -1,6 +1,6 @@
 package me.dinuka.tmo.dto;
 
-public class UserDTO {
+public class UserDTO implements java.io.Serializable{
     private int id;
     private String username;
     private String email;

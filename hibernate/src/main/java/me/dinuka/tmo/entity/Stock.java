@@ -25,6 +25,10 @@ public class Stock implements Serializable{
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @ManyToOne
+    @JoinColumn(name = "warehouse_id")
+    private Warehouse warehouse;
+
     public Stock() {
     }
 
@@ -53,6 +57,14 @@ public class Stock implements Serializable{
 
     public int getQty() {
         return qty;
+    }
+
+    public Warehouse getWarehouse() {
+        return warehouse;
+    }
+
+    public void setWarehouse(Warehouse warehouse) {
+        this.warehouse = warehouse;
     }
 
     public void setQty(int qty) {

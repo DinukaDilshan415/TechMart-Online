@@ -39,6 +39,12 @@
         </dependency>
         <dependency>
             <groupId>me.dinuka.tmo</groupId>
+            <artifactId>messaging</artifactId>
+            <version>1.0</version>
+            <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>me.dinuka.tmo</groupId>
             <artifactId>web</artifactId>
             <version>1.0</version>
             <type>war</type>
@@ -69,6 +75,11 @@
                             <groupId>me.dinuka.tmo</groupId>
                             <artifactId>ejb</artifactId>
                             <bundleFileName>ejb.jar</bundleFileName>
+                        </ejbModule>
+                        <ejbModule>
+                            <groupId>me.dinuka.tmo</groupId>
+                            <artifactId>messaging</artifactId>
+                            <bundleFileName>messaging.jar</bundleFileName>
                         </ejbModule>
                         <webModule>
                             <groupId>me.dinuka.tmo</groupId>
