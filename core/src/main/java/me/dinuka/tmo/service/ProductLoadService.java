@@ -9,5 +9,6 @@ import java.util.List;
 @Remote
 public interface ProductLoadService {
     List<HomeProductsDTO> loadAllProducts();
-    ProductDTO getProductById(int id);
+    String getProductById(String id);
+    String loadProductReviews(String id);
 }
