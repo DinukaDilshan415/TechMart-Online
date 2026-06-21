@@ -9,6 +9,7 @@ import jakarta.jms.Topic;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.Part;
+import me.dinuka.tmo.dto.HomeProductsDTO;
 import me.dinuka.tmo.dto.ProductDTO;
 import me.dinuka.tmo.entity.Brand;
 import me.dinuka.tmo.entity.Product;
@@ -22,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Date;
+import java.util.List;
 
 @Singleton
 public class ProductSessionBean implements ProductService {
@@ -100,10 +102,4 @@ public class ProductSessionBean implements ProductService {
     public String deleteProduct(int id) {
         return null;
     }
-
-    @Override
-    public ProductDTO getProductById(int id) {
-        return null;
-    }
-
 }
