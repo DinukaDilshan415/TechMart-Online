@@ -10,6 +10,7 @@ import me.dinuka.tmo.entity.Product;
 import me.dinuka.tmo.entity.Stock;
 import me.dinuka.tmo.entity.User;
 import me.dinuka.tmo.service.CartService;
+import me.dinuka.tmo.util.RegexValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -171,6 +172,80 @@ public class CartSessionBean implements CartService {
     @Override
     public List<Cart> getSessionCart() {
         return sessionCart;
+    }
+
+    @Override
+    public String removeFromSessionCart(String id, User user) {
+        Product product = em.find(Product.class, Integer.valueOf(id));
+
+        String jpql = "SELECT c FROM Cart c WHERE c.user = :user AND c.product = :product";
+        List<Cart> cartList = em.createQuery(jpql, Cart.class)
+                .setParameter("user", user)
+                .setParameter("product", product)
+                .getResultList();
+
+        if (!cartList.isEmpty()) {
+            Cart cartItem = cartList.get(0);
+
+            em.remove(cartItem);
+
+            return "success";
+        } else {
+            System.out.println("Product Not Found");
+            return "Product Not Found";
+        }
+
+    }
+
+    @Override
+    public String updateCartQtyFromCart(String id, String qty, User user) {
+
+        if (!RegexValidator.isValidInteger(id)) {
+            return "Invalid Product Id";
+        } else if (!RegexValidator.isValidInteger(qty)) {
+            return "Invalid Product Qty";
+        } else {
+            Product product = em.find(Product.class, Integer.valueOf(id));
+
+            if (product == null) {
+                return "Product Not Found";
+            }
+
+            String stockJpql = "SELECT s FROM Stock s WHERE s.product = :product";
+            List<Stock> stockResults = em.createQuery(stockJpql, Stock.class)
+                    .setParameter("product", product)
+                    .getResultList();
+            Stock pStock = stockResults.isEmpty() ? null : stockResults.get(0);
+
+            if (user != null) {
+                String cartJpql = "SELECT c FROM Cart c WHERE c.user = :user AND c.product = :product";
+                List<Cart> cartList = em.createQuery(cartJpql, Cart.class)
+                        .setParameter("user", user)
+                        .setParameter("product", product)
+                        .getResultList();
+
+                if (cartList.isEmpty()) { // Product not found in user's cart
+                    return "Product Not Found";
+                } else {
+                    Cart cart = cartList.get(0);
+                    int targetQty = Integer.parseInt(qty);
+
+                    if (pStock != null && targetQty <= pStock.getQty()) {
+                        cart.setQty(targetQty);
+
+                        System.out.println("Cart Updated:"+" Product Id: " + cart.getProduct().getId() + " Qty: " + cart.getQty());
+
+                        em.merge(cart);
+
+                        return "success";
+                    } else {
+                        return "Insuficient Product Quantity";
+                    }
+                }
+            } else {
+                return "User Not Logged In";
+            }
+        }
     }
 
     public void clearSessionCart() {
