@@ -13,4 +13,6 @@ public interface CartService {
     String addProductToSessionCart(String productId, String quantity);
     String addSessionCartToDatabase(List<Cart> sessionList, User user);
     List<Cart> getSessionCart();
+    String removeFromSessionCart(String id, User user);
+    String updateCartQtyFromCart(String id, String quantity, User user);
 }
