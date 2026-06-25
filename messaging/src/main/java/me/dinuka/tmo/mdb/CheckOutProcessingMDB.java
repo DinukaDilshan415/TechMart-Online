@@ -1,6 +1,7 @@
 package me.dinuka.tmo.mdb;
 
 import jakarta.ejb.ActivationConfigProperty;
+import jakarta.ejb.EJB;
 import jakarta.ejb.MessageDriven;
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
@@ -9,8 +10,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import me.dinuka.tmo.dto.CheckoutPayloadDTO;
 import me.dinuka.tmo.entity.*;
+import me.dinuka.tmo.service.EmailService;
+import me.dinuka.tmo.util.mailer.Mail;
+import me.dinuka.tmo.util.mailer.MailTemplates;
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,6 +31,9 @@ public class CheckOutProcessingMDB implements MessageListener {
 
     @PersistenceContext(unitName = "TechMartPU")
     private EntityManager em;
+
+    @EJB
+    private EmailService emailService;
 
     @Override
     public void onMessage(Message message) {
@@ -117,7 +123,7 @@ public class CheckOutProcessingMDB implements MessageListener {
                         giftNote = giftAddress.getNote();
                     }
 
-                    HashMap detailMap = new HashMap();
+                    HashMap<String, Object> detailMap = new HashMap<String, Object>();
                     detailMap.put("OrderId", orderId);
                     detailMap.put("placedOn", new SimpleDateFormat("MMM dd, yyyy, h:mm:ss a").format(new Date()));
                     detailMap.put("billName", userAddress.getFull_name());
@@ -134,13 +140,8 @@ public class CheckOutProcessingMDB implements MessageListener {
 
                     detailMap.put("productsList", cartList);
 
-                    //send mail
-//                    new Thread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            Mail.sendMail(user.getEmail(), "Your TechMart-Online order confirmation", new MailTemplates().generateOrderConfirmationEmail(detailMap));
-//                        }
-//                    }).start();
+                    emailService.sendOrderEmail(detailMap, user.getEmail());
+
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
