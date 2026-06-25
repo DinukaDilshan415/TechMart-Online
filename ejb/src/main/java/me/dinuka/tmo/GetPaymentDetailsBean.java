@@ -5,10 +5,7 @@ import com.google.gson.JsonObject;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import me.dinuka.tmo.entity.Cart;
-import me.dinuka.tmo.entity.City;
-import me.dinuka.tmo.entity.Invoice;
-import me.dinuka.tmo.entity.User;
+import me.dinuka.tmo.entity.*;
 import me.dinuka.tmo.service.CheckoutService;
 import me.dinuka.tmo.util.PayHere;
 import me.dinuka.tmo.util.RegexValidator;
@@ -168,5 +165,36 @@ public class GetPaymentDetailsBean implements CheckoutService {
         }
 
         return gson.toJson(responseObject);
+    }
+
+    @Override
+    public String buyProductNow(List<Cart> cartList, String productId, String qty, User user) {
+
+        String deleteJpql = "DELETE FROM Cart c WHERE c.user = :user";
+        em.createQuery(deleteJpql)
+                .setParameter("user", user)
+                .executeUpdate();
+
+        Product product = em.find(Product.class, Integer.valueOf(productId));
+
+        String stockJpql = "SELECT s FROM Stock s WHERE s.product = :product";
+        List<Stock> stockResults = em.createQuery(stockJpql, Stock.class)
+                .setParameter("product", product)
+                .getResultList();
+        Stock pStock = stockResults.isEmpty() ? null : stockResults.get(0);
+
+        if (pStock != null && Integer.parseInt(qty) <= pStock.getQty()) { // Product qty available
+            Cart cart = new Cart();
+            cart.setQty(Integer.parseInt(qty));
+            cart.setProduct(product);
+            cart.setUser(user);
+            cart.setStock(pStock);
+
+            em.persist(cart);
+
+            return "success";
+        } else {
+            return "Insuficient Product Quantity";
+        }
     }
 }
