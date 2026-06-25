@@ -89,7 +89,6 @@ public class ProductSessionBean implements ProductService {
             }
         }
 
-
         return "success";
     }
 

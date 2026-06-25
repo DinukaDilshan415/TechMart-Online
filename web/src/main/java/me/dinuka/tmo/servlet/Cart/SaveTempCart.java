@@ -2,6 +2,7 @@ package me.dinuka.tmo.servlet.Cart;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import jakarta.ejb.EJB;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.ServletException;
@@ -12,6 +13,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import me.dinuka.tmo.entity.Cart;
 import me.dinuka.tmo.entity.User;
+import me.dinuka.tmo.service.CartService;
+import me.dinuka.tmo.service.TempCartService;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,8 +22,8 @@ import java.util.List;
 @WebServlet("/SaveTempCart")
 public class SaveTempCart extends HttpServlet {
 
-    @PersistenceContext(unitName = "TechMartPU")
-    private EntityManager em;
+    @EJB
+    private TempCartService tempCartService;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -36,23 +39,12 @@ public class SaveTempCart extends HttpServlet {
             if (ses.getAttribute("tempCartList") != null) {
                 List<Cart> userCartList = (List<Cart>) ses.getAttribute("tempCartList");
 
-                try {
-                    em.getTransaction().begin();
+                String s = tempCartService.saveTempCart(userCartList);
 
-                    for (Cart cart : userCartList) {
-                        em.persist(cart);
-                    }
-
-                    em.getTransaction().commit();
-
-                } catch (Exception e) {
-                    if (em.getTransaction().isActive()) {
-                        em.getTransaction().rollback();
-                    }
-                    throw e;
+                if (s.equals("success")) {
+                    ses.setAttribute("tempCartList", null);
+                    ResponseObject.addProperty("status", true);
                 }
-                ses.setAttribute("tempCartList", null);
-                ResponseObject.addProperty("status", true);
             }
 
         }
