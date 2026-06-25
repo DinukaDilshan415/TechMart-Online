@@ -120,11 +120,14 @@ public class ChechOutProcessingBean implements CheckoutProcessingService {
 
 
                 if (addressList.isEmpty()) { //add address to db
-                    UserAddress userAddress = new UserAddress(daAddressType, daFullName, daAddress, daPostalCode, daMobile, city, user);
+                    User managedUser = em.find(User.class, user.getId());
+                    UserAddress userAddress = new UserAddress(daAddressType, daFullName, daAddress, daPostalCode, daMobile, city, managedUser);
+
                     em.persist(userAddress);
+                    em.flush();
                     updateDatabase(userAddress, ga, user);
                 } else { //get exist address
-                    UserAddress userAddress = (UserAddress) addressList.get(0);
+                    UserAddress userAddress = addressList.get(0);
                     updateDatabase(userAddress, ga, user);
                 }
                 

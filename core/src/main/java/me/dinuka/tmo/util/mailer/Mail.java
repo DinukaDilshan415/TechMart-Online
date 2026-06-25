@@ -12,8 +12,8 @@ import java.util.Properties;
 
 public class Mail {
 
-    private static final String APP_EMAIL = "39cbec8350fa0b"; //dilshandarms@gmail.com
-    private static final String APP_PASSWORD = "b7bbc66b2d75b6"; //b7bbc66b2d75b6 - mailtrap
+    private static final String APP_EMAIL = "bac2b2b6d3981e"; //dilshandarms@gmail.com
+    private static final String APP_PASSWORD = "ea5e7f4ae3ae9d"; //b7bbc66b2d75b6 - mailtrap
 
     public static void sendMail(String email, String subject, String htmlContent) {
 

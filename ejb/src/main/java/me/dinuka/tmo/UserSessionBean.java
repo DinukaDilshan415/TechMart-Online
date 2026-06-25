@@ -61,8 +61,10 @@ public class UserSessionBean implements UserService {
     }
 
     @Override
-    public void update(UserDTO userDTO) {
+    public String update(User user) {
+        session.merge(user);
 
+        return "success";
     }
 
     @Override
@@ -73,5 +75,12 @@ public class UserSessionBean implements UserService {
     @Override
     public UserDTO getByEmail(String email) {
         return null;
+    }
+
+    @Override
+    public String reSendVerification(User user) {
+        session.merge(user);
+
+        return "success";
     }
 }
