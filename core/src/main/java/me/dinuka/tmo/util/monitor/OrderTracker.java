@@ -7,13 +7,11 @@ public class OrderTracker {
     private static final AtomicInteger activeCount = new AtomicInteger(0);
     private static final AtomicInteger totalProcessed = new AtomicInteger(0);
 
-    // Call this when an order starts processing
     public static void orderStarted() {
         activeCount.incrementAndGet();
         totalProcessed.incrementAndGet();
     }
 
-    // Call this when an order finishes processing
     public static void orderCompleted() {
         activeCount.decrementAndGet();
     }

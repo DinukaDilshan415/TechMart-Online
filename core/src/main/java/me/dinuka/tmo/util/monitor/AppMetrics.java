@@ -7,40 +7,28 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class AppMetrics {
 
-    // Stores total execution time per operation
     private static final ConcurrentHashMap<String, AtomicLong> totalTime
             = new ConcurrentHashMap<>();
 
-    // Stores how many times each operation was called
     private static final ConcurrentHashMap<String, AtomicLong> callCount
             = new ConcurrentHashMap<>();
 
-    // Stores how many times each operation failed
     private static final ConcurrentHashMap<String, AtomicLong> failCount
             = new ConcurrentHashMap<>();
 
-    // Stores peak (slowest) time per operation
     private static final ConcurrentHashMap<String, AtomicLong> peakTime
             = new ConcurrentHashMap<>();
 
-    // -------------------------------------------------------
-    // Call this when any operation SUCCEEDS
-    // operationName = any string you choose eg "createOrder"
-    // -------------------------------------------------------
     public static void recordSuccess(String operationName, long elapsedMs) {
         totalTime.computeIfAbsent(operationName, k -> new AtomicLong(0))
                 .addAndGet(elapsedMs);
         callCount.computeIfAbsent(operationName, k -> new AtomicLong(0))
                 .incrementAndGet();
 
-        // Update peak if this call was slower
         peakTime.computeIfAbsent(operationName, k -> new AtomicLong(0))
                 .accumulateAndGet(elapsedMs, Math::max);
     }
 
-    // -------------------------------------------------------
-    // Call this when any operation FAILS
-    // -------------------------------------------------------
     public static void recordFailure(String operationName, long elapsedMs) {
         totalTime.computeIfAbsent(operationName, k -> new AtomicLong(0))
                 .addAndGet(elapsedMs);
@@ -50,9 +38,6 @@ public class AppMetrics {
                 .incrementAndGet();
     }
 
-    // -------------------------------------------------------
-    // Getters
-    // -------------------------------------------------------
     public static double getAvgTime(String operationName) {
         AtomicLong count = callCount.get(operationName);
         AtomicLong time  = totalTime.get(operationName);
@@ -82,7 +67,6 @@ public class AppMetrics {
         return ((double)(total - fails) / total) * 100.0;
     }
 
-    // Returns ALL operations as a map — for JSON in MetricsServlet
     public static Map<String, Map<String, Object>> getAllStats() {
         Map<String, Map<String, Object>> result = new HashMap<>();
         for (String key : callCount.keySet()) {
