@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import me.dinuka.tmo.service.CategoryService;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -28,11 +29,14 @@ public class LoadPopulerCategories extends HttpServlet {
         JsonObject responseObject = new JsonObject();
         responseObject.addProperty("status", false);
 
+        DbConnectionTracker.connectionAcquired();
+
         List<HashMap> categoryList = categoryService.getPopularCategories();
 
         responseObject.add("categories", gson.toJsonTree(categoryList));
         responseObject.addProperty("status", true);
 
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(responseObject);
         response.setContentType("application/json");
         response.getWriter().write(responseText);

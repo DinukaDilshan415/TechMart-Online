@@ -13,6 +13,7 @@ import jakarta.servlet.http.Part;
 import me.dinuka.tmo.dto.ProductDTO;
 import me.dinuka.tmo.service.ProductService;
 import me.dinuka.tmo.util.RegexValidator;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -76,6 +77,8 @@ public class SaveProduct extends HttpServlet {
                 imageBytes = is.readAllBytes();
             }
 
+            DbConnectionTracker.connectionAcquired();
+
             String s = productService.addProduct(
                     new ProductDTO(title,
                             description,
@@ -95,6 +98,7 @@ public class SaveProduct extends HttpServlet {
             }
         }
 
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(ResponseObject);
         response.setContentType("application/json");
         response.getWriter().write(responseText);

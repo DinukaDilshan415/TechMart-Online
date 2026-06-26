@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import me.dinuka.tmo.service.ProductLoadService;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.io.IOException;
 
@@ -21,8 +22,11 @@ public class LoadProductReviews extends HttpServlet {
 
         String productId = request.getParameter("id");
 
+        DbConnectionTracker.connectionAcquired();
+
         String responseText = productLoadService.loadProductReviews(productId);
 
+        DbConnectionTracker.connectionReleased();
         response.setContentType("application/json");
         response.getWriter().write(responseText);
     }

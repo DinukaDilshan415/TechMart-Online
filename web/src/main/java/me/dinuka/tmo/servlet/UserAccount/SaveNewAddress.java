@@ -16,6 +16,7 @@ import me.dinuka.tmo.entity.UserAddress;
 import me.dinuka.tmo.service.AddressService;
 import me.dinuka.tmo.util.RegexValidator;
 import me.dinuka.tmo.util.Util;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,6 +32,8 @@ public class SaveNewAddress extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        DbConnectionTracker.connectionAcquired();
+
         Gson gson = new Gson();
         JsonObject addressData = gson.fromJson(request.getReader(), JsonObject.class);
 
@@ -75,6 +78,8 @@ public class SaveNewAddress extends HttpServlet {
 
             }
         }
+
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(ResponseObject);
         response.setContentType("application/json");
         response.getWriter().write(responseText);

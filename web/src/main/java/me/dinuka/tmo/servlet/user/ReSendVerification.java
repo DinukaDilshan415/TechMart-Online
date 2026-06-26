@@ -16,6 +16,7 @@ import me.dinuka.tmo.service.UserService;
 import me.dinuka.tmo.util.Util;
 import me.dinuka.tmo.util.mailer.Mail;
 import me.dinuka.tmo.util.mailer.MailTemplates;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.io.IOException;
 
@@ -30,6 +31,8 @@ public class ReSendVerification extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        DbConnectionTracker.connectionAcquired();
+
         Gson gson = new Gson();
         JsonObject ResponseObject = new JsonObject();
         ResponseObject.addProperty("status", false);
@@ -67,6 +70,8 @@ public class ReSendVerification extends HttpServlet {
                 }
             }
         }
+
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(ResponseObject);
         response.setContentType("application/json");
         response.getWriter().write(responseText);

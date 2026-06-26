@@ -16,6 +16,7 @@ import me.dinuka.tmo.entity.Product;
 import me.dinuka.tmo.entity.Stock;
 import me.dinuka.tmo.entity.SubCategory;
 import me.dinuka.tmo.util.RegexValidator;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,6 +30,8 @@ public class StockCheck extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        DbConnectionTracker.connectionAcquired();
 
         Gson gson = new Gson();
         JsonObject ResponseObject = new JsonObject();
@@ -98,6 +101,8 @@ public class StockCheck extends HttpServlet {
 
             ResponseObject.addProperty("status", true);
         }
+
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(ResponseObject);
         response.setContentType("application/json");
         response.getWriter().write(responseText);

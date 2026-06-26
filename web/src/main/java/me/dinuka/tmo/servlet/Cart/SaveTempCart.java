@@ -15,6 +15,7 @@ import me.dinuka.tmo.entity.Cart;
 import me.dinuka.tmo.entity.User;
 import me.dinuka.tmo.service.CartService;
 import me.dinuka.tmo.service.TempCartService;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,6 +40,8 @@ public class SaveTempCart extends HttpServlet {
             if (ses.getAttribute("tempCartList") != null) {
                 List<Cart> userCartList = (List<Cart>) ses.getAttribute("tempCartList");
 
+                DbConnectionTracker.connectionAcquired();
+
                 String s = tempCartService.saveTempCart(userCartList);
 
                 if (s.equals("success")) {
@@ -49,6 +52,7 @@ public class SaveTempCart extends HttpServlet {
 
         }
 
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(ResponseObject);
         response.setContentType("application/json");
         response.getWriter().write(responseText);

@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import me.dinuka.tmo.entity.Cart;
 import me.dinuka.tmo.entity.User;
 import me.dinuka.tmo.service.CartService;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class CheckSessionCart extends HttpServlet {
         if (user != null) {
             ArrayList<Cart> sessionList = (ArrayList<Cart>) request.getSession().getAttribute("sessionCart");
             if (sessionList != null) {
+                DbConnectionTracker.connectionAcquired();
 
                 String s = cartService.addSessionCartToDatabase(sessionList, user);
 
@@ -46,6 +48,7 @@ public class CheckSessionCart extends HttpServlet {
             }
         }
 
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(ResponseObject);
         response.setContentType("application/json");
         response.getWriter().write(responseText);

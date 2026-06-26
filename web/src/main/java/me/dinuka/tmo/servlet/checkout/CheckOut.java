@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import me.dinuka.tmo.entity.User;
 import me.dinuka.tmo.service.CheckoutProcessingService;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.io.IOException;
 import java.util.Map;
@@ -28,8 +29,11 @@ public class CheckOut extends HttpServlet {
 
         Map<String, Object> requestData = gson.fromJson(reqJsonObject, Map.class);
 
+        DbConnectionTracker.connectionAcquired();
+
         String responseText = checkoutProcessingService.processCheckout(user, requestData);
 
+        DbConnectionTracker.connectionReleased();
         response.setContentType("application/json");
         response.getWriter().write(responseText);
     }

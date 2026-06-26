@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import me.dinuka.tmo.entity.User;
 import me.dinuka.tmo.service.CartService;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.io.IOException;
 
@@ -30,6 +31,7 @@ public class RemoveFromCart extends HttpServlet {
         User user = (User) request.getSession().getAttribute("user");
 
         if (user != null) {
+            DbConnectionTracker.connectionAcquired();
 
             String s = cartService.removeFromSessionCart(productId, user);
 
@@ -44,6 +46,7 @@ public class RemoveFromCart extends HttpServlet {
             ResponseObject.addProperty("message", "Session Expired ! Please Sign in");
         }
 
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(ResponseObject);
         response.setContentType("application/json");
         response.getWriter().write(responseText);

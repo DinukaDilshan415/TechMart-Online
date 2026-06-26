@@ -15,6 +15,7 @@ import jakarta.servlet.http.*;
 import me.dinuka.tmo.entity.User;
 import me.dinuka.tmo.service.UserService;
 import me.dinuka.tmo.util.HibernateUtil;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 import org.hibernate.Session;
 
 import java.io.IOException;
@@ -31,6 +32,8 @@ public class VerifyAccount extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        DbConnectionTracker.connectionAcquired();
+
         Gson gson = new Gson();
         JsonObject verify = gson.fromJson(request.getReader(), JsonObject.class);
 
@@ -80,6 +83,8 @@ public class VerifyAccount extends HttpServlet {
                 }
             }
         }
+
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(ResponseObject);
         response.setContentType("application/json");
         response.getWriter().write(responseText);

@@ -12,6 +12,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import me.dinuka.tmo.entity.Admin;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
+import me.dinuka.tmo.util.monitor.SessionTracker;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,6 +28,7 @@ public class AdminSignIn extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        DbConnectionTracker.connectionAcquired();
         Gson gson = new Gson();
         JsonObject signIn = gson.fromJson(request.getReader(), JsonObject.class);
 
@@ -62,6 +65,7 @@ public class AdminSignIn extends HttpServlet {
                     sessionCookie.setMaxAge(60 * 30); // 30 minutes
 
                     response.addCookie(sessionCookie);
+                    SessionTracker.sessionCreated();
 
                     ResponseObject.addProperty("status", true);
                 } else {
@@ -69,6 +73,7 @@ public class AdminSignIn extends HttpServlet {
                 }
             }
         }
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(ResponseObject);
         response.setContentType("application/json");
         response.getWriter().write(responseText);

@@ -10,6 +10,7 @@ import jakarta.persistence.PersistenceContext;
 import me.dinuka.tmo.entity.Product;
 import me.dinuka.tmo.entity.Stock;
 import me.dinuka.tmo.entity.Warehouse;
+import me.dinuka.tmo.util.monitor.MdbMetrics;
 
 @MessageDriven(activationConfig = {
         @ActivationConfigProperty(propertyName = "destinationLookup", propertyValue = "jms/productTopic"),
@@ -48,7 +49,9 @@ public class AddNewStockMDB implements MessageListener {
                     }
                 }
             }
+            MdbMetrics.messageProcessed();
         } catch (Exception e) {
+            MdbMetrics.messageFailed();
             System.err.println("MDB stock initialization parsing failure: " + e.getMessage());
         }
     }

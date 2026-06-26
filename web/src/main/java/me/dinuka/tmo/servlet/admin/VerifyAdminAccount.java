@@ -13,6 +13,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import jakarta.transaction.UserTransaction;
 import me.dinuka.tmo.entity.Admin;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import javax.naming.InitialContext;
 import java.io.IOException;
@@ -27,6 +28,8 @@ public class VerifyAdminAccount extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        DbConnectionTracker.connectionAcquired();
+
         Gson gson = new Gson();
         JsonObject verify = gson.fromJson(request.getReader(), JsonObject.class);
 
@@ -86,6 +89,8 @@ public class VerifyAdminAccount extends HttpServlet {
                 }
             }
         }
+
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(ResponseObject);
         response.setContentType("application/json");
         response.getWriter().write(responseText);

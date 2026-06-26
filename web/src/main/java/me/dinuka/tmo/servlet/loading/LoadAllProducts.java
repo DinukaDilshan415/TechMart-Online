@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import me.dinuka.tmo.entity.Admin;
 import me.dinuka.tmo.entity.Product;
 import me.dinuka.tmo.entity.Stock;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,6 +25,8 @@ public class LoadAllProducts extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        DbConnectionTracker.connectionAcquired();
+
         Gson gson = new Gson();
         JsonObject responseObject = new JsonObject();
         responseObject.addProperty("status", false);
@@ -50,6 +53,7 @@ public class LoadAllProducts extends HttpServlet {
             responseObject.addProperty("message", "Admin Session Expired");
         }
 
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(responseObject);
         response.setContentType("application/json");
         response.getWriter().write(responseText);

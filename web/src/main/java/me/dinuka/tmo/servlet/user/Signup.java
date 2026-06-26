@@ -9,6 +9,8 @@ import jakarta.servlet.http.*;
 import me.dinuka.tmo.dto.UserDTO;
 import me.dinuka.tmo.service.UserService;
 import me.dinuka.tmo.util.RegexValidator;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
+import me.dinuka.tmo.util.monitor.SessionTracker;
 
 import java.io.IOException;
 
@@ -20,6 +22,8 @@ public class Signup extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        DbConnectionTracker.connectionAcquired();
+
         Gson gson = new Gson();
         JsonObject user = gson.fromJson(req.getReader(), JsonObject.class);
 
@@ -66,6 +70,7 @@ public class Signup extends HttpServlet {
                 sessionCookie.setMaxAge(60 * 30); // 30 minutes
 
                 resp.addCookie(sessionCookie);
+                SessionTracker.sessionCreated();
 
                 ResponseObject.addProperty("status", true);
                 ResponseObject.addProperty("message", "Registration Success ! Please Check Your Email For The Verification");
@@ -75,6 +80,8 @@ public class Signup extends HttpServlet {
                 ResponseObject.addProperty("message", "Registration Failed !");
             }
         }
+
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(ResponseObject);
         resp.setContentType("application/json");
         resp.getWriter().write(responseText);
