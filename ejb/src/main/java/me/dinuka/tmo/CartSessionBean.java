@@ -3,8 +3,6 @@ package me.dinuka.tmo;
 import jakarta.ejb.Stateful;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpSession;
 import me.dinuka.tmo.entity.Cart;
 import me.dinuka.tmo.entity.Product;
 import me.dinuka.tmo.entity.Stock;
@@ -122,51 +120,51 @@ public class CartSessionBean implements CartService {
     }
 
     public String addProductToStatefulCart(String productId, String qty) {
-        Product product = em.find(Product.class, Integer.valueOf(productId));
+            Product product = em.find(Product.class, Integer.valueOf(productId));
 
-        if (product == null) {
-            return "Product Not Found";
-        }
-
-        String stockJpql = "SELECT s FROM Stock s WHERE s.product = :product";
-        List<Stock> stockResults = em.createQuery(stockJpql, Stock.class)
-                .setParameter("product", product)
-                .getResultList();
-        Stock pStock = stockResults.isEmpty() ? null : stockResults.get(0);
-
-        if (pStock == null) {
-            return "Product Not Found";
-        }
-
-        int requestedQty = Integer.parseInt(qty);
-
-        // Check if product already in cart
-        Cart foundCart = sessionCart.stream()
-                .filter(c -> c.getProduct().getId() == product.getId())
-                .findFirst()
-                .orElse(null);
-
-        if (foundCart != null) {
-            int newQty = foundCart.getQty() + requestedQty;
-            if (newQty <= pStock.getQty()) {
-                foundCart.setQty(newQty);
-                return "success";
-            } else {
-                return "Insuficient Product Quantity";
+            if (product == null) {
+                return "Product Not Found";
             }
-        } else {
-            if (requestedQty <= pStock.getQty()) {
-                Cart cart = new Cart();
-                cart.setQty(requestedQty);
-                cart.setUser(null);
-                cart.setProduct(product);
-                cart.setStock(pStock);
-                sessionCart.add(cart);
-                return "success";
-            } else {
-                return "Insuficient Product Quantity";
+
+            String stockJpql = "SELECT s FROM Stock s WHERE s.product = :product";
+            List<Stock> stockResults = em.createQuery(stockJpql, Stock.class)
+                    .setParameter("product", product)
+                    .getResultList();
+            Stock pStock = stockResults.isEmpty() ? null : stockResults.get(0);
+
+            if (pStock == null) {
+                return "Product Not Found";
             }
-        }
+
+            int requestedQty = Integer.parseInt(qty);
+
+            // Check if product already in cart
+            Cart foundCart = sessionCart.stream()
+                    .filter(c -> c.getProduct().getId() == product.getId())
+                    .findFirst()
+                    .orElse(null);
+
+            if (foundCart != null) {
+                int newQty = foundCart.getQty() + requestedQty;
+                if (newQty <= pStock.getQty()) {
+                    foundCart.setQty(newQty);
+                    return "success";
+                } else {
+                    return "Insuficient Product Quantity";
+                }
+            } else {
+                if (requestedQty <= pStock.getQty()) {
+                    Cart cart = new Cart();
+                    cart.setQty(requestedQty);
+                    cart.setUser(null);
+                    cart.setProduct(product);
+                    cart.setStock(pStock);
+                    sessionCart.add(cart);
+                    return "success";
+                } else {
+                    return "Insuficient Product Quantity";
+                }
+            }
     }
 
     @Override
@@ -233,7 +231,7 @@ public class CartSessionBean implements CartService {
                     if (pStock != null && targetQty <= pStock.getQty()) {
                         cart.setQty(targetQty);
 
-                        System.out.println("Cart Updated:"+" Product Id: " + cart.getProduct().getId() + " Qty: " + cart.getQty());
+                        System.out.println("Cart Updated:" + " Product Id: " + cart.getProduct().getId() + " Qty: " + cart.getQty());
 
                         em.merge(cart);
 
