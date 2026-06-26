@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import me.dinuka.tmo.entity.*;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,6 +28,8 @@ public class LoadProductData extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        DbConnectionTracker.connectionAcquired();
+
         Gson gson = new Gson();
 
         List<Brand> brandList = em.createQuery(
@@ -58,6 +61,8 @@ public class LoadProductData extends HttpServlet {
         ResponseObject.add("categoryList", gson.toJsonTree(categoryList));
         ResponseObject.add("subCategoryList", gson.toJsonTree(subCategoryList));
 
+
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(ResponseObject);
         response.setContentType("application/json");
         response.getWriter().write(responseText);

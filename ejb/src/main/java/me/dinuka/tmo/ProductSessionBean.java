@@ -2,28 +2,24 @@ package me.dinuka.tmo;
 
 import jakarta.annotation.Resource;
 import jakarta.ejb.Singleton;
-import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.jms.JMSContext;
 import jakarta.jms.Topic;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.servlet.http.Part;
-import me.dinuka.tmo.dto.HomeProductsDTO;
 import me.dinuka.tmo.dto.ProductDTO;
 import me.dinuka.tmo.entity.Brand;
 import me.dinuka.tmo.entity.Product;
 import me.dinuka.tmo.entity.Status;
 import me.dinuka.tmo.entity.SubCategory;
 import me.dinuka.tmo.service.ProductService;
+import me.dinuka.tmo.util.monitor.JmsMetrics;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Date;
-import java.util.List;
 
 @Singleton
 public class ProductSessionBean implements ProductService {
@@ -66,10 +62,16 @@ public class ProductSessionBean implements ProductService {
                 + ":" + productDTO.getWare_house_id()
                 + ":" + productDTO.getPrice();
 
-        jmsContext.createProducer()
-                .setDeliveryMode(jakarta.jms.DeliveryMode.NON_PERSISTENT)
-                .send(productTopic, messagePayload);
+        try {
+            jmsContext.createProducer()
+                    .setDeliveryMode(jakarta.jms.DeliveryMode.NON_PERSISTENT)
+                    .send(productTopic, messagePayload);
 
+            JmsMetrics.messageSent();
+        } catch (Exception e) {
+            JmsMetrics.messageFailed();
+            throw new RuntimeException(e);
+        }
         byte[] image = productDTO.getImage();
 
         if (image != null && image.length > 0) {

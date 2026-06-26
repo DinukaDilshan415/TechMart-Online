@@ -18,6 +18,8 @@ import me.dinuka.tmo.entity.UserAddress;
 import me.dinuka.tmo.service.CheckoutProcessingService;
 import me.dinuka.tmo.util.RegexValidator;
 import me.dinuka.tmo.util.Util;
+import me.dinuka.tmo.util.monitor.JmsMetrics;
+import me.dinuka.tmo.util.monitor.OrderTracker;
 
 import java.util.List;
 import java.util.Map;
@@ -141,14 +143,15 @@ public class ChechOutProcessingBean implements CheckoutProcessingService {
 
     @Asynchronous
     private void updateDatabase(UserAddress userAddress, GiftAddress giftAddress, User user) {
-
+        OrderTracker.orderStarted();
         try (JMSContext context = connectionFactory.createContext()) {
 
             CheckoutPayloadDTO tokenPayload = new CheckoutPayloadDTO(userAddress, giftAddress, user);
 
             context.createProducer().send(checkoutQueue, tokenPayload);
-
+            JmsMetrics.messageSent();
         } catch (Exception e) {
+            JmsMetrics.messageFailed();
             throw new RuntimeException(e);
         }
     }

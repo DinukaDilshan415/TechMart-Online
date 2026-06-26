@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import me.dinuka.tmo.entity.AdminRole;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,12 +22,15 @@ public class LoadAdminRoleData extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        DbConnectionTracker.connectionAcquired();
+
         Gson gson = new Gson();
 
         String jpql = "SELECT ar FROM AdminRole ar";
         List<AdminRole> adminRoleList = em.createQuery(jpql, AdminRole.class)
                 .getResultList();
 
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(adminRoleList);
         response.setContentType("application/json");
         response.getWriter().write(responseText);

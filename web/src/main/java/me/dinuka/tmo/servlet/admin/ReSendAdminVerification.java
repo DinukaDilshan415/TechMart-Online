@@ -13,9 +13,9 @@ import me.dinuka.tmo.entity.Admin;
 import me.dinuka.tmo.util.Util;
 import me.dinuka.tmo.util.mailer.Mail;
 import me.dinuka.tmo.util.mailer.MailTemplates;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.List;
 
@@ -27,6 +27,8 @@ public class ReSendAdminVerification extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        DbConnectionTracker.connectionAcquired();
+
         Gson gson = new Gson();
 
         JsonObject ResponseObject = new JsonObject();
@@ -91,6 +93,8 @@ public class ReSendAdminVerification extends HttpServlet {
                 ResponseObject.addProperty("message", "New Verification Code Send");
             }
         }
+
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(ResponseObject);
         response.setContentType("application/json");
         response.getWriter().write(responseText);

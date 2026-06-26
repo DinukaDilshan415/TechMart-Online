@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import me.dinuka.tmo.entity.Admin;
 import me.dinuka.tmo.service.AdminDashboardService;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.io.IOException;
 
@@ -21,8 +22,11 @@ public class LoadAllOrders extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Admin admin = (Admin) request.getSession().getAttribute("admin");
 
+        DbConnectionTracker.connectionAcquired();
+
         String responseText = adminDashboardService.getOrdersData(admin);
 
+        DbConnectionTracker.connectionReleased();
         response.setContentType("application/json");
         response.getWriter().write(responseText);
     }

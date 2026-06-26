@@ -11,6 +11,7 @@ import jakarta.servlet.http.*;
 import me.dinuka.tmo.entity.User;
 import me.dinuka.tmo.service.UserService;
 import me.dinuka.tmo.util.RegexValidator;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,6 +27,8 @@ public class UpdateUserProfile extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        DbConnectionTracker.connectionAcquired();
+
         Gson gson = new Gson();
         JsonObject user = gson.fromJson(request.getReader(), JsonObject.class);
 
@@ -77,6 +80,7 @@ public class UpdateUserProfile extends HttpServlet {
             }
         }
 
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(ResponseObject);
         response.setContentType("application/json");
         response.getWriter().write(responseText);

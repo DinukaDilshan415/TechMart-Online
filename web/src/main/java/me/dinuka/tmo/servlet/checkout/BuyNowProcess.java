@@ -15,6 +15,7 @@ import me.dinuka.tmo.entity.Cart;
 import me.dinuka.tmo.entity.User;
 import me.dinuka.tmo.service.CheckoutService;
 import me.dinuka.tmo.util.RegexValidator;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,6 +31,8 @@ public class BuyNowProcess extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        DbConnectionTracker.connectionAcquired();
+
         Gson gson = new Gson();
         JsonObject ResponseObject = new JsonObject();
         ResponseObject.addProperty("status", false);
@@ -67,6 +70,7 @@ public class BuyNowProcess extends HttpServlet {
             }
         }
 
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(ResponseObject);
         response.setContentType("application/json");
         response.getWriter().write(responseText);

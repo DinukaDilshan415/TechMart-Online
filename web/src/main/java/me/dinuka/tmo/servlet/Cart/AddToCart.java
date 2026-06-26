@@ -10,6 +10,7 @@ import me.dinuka.tmo.entity.Cart;
 import me.dinuka.tmo.entity.User;
 import me.dinuka.tmo.service.CartService;
 import me.dinuka.tmo.util.RegexValidator;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.io.IOException;
 import java.util.List;
@@ -35,6 +36,8 @@ public class AddToCart extends HttpServlet {
         } else if (!RegexValidator.isValidInteger(qty)) {
             ResponseObject.addProperty("message", "Invalid Product Qty");
         } else {
+
+            DbConnectionTracker.connectionAcquired();
 
             User user = (User) request.getSession().getAttribute("user");
 
@@ -76,6 +79,8 @@ public class AddToCart extends HttpServlet {
             }
 
         }
+
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(ResponseObject);
         response.setContentType("application/json");
         response.getWriter().write(responseText);

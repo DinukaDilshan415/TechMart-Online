@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import me.dinuka.tmo.dto.HomeProductsDTO;
 import me.dinuka.tmo.service.ProductLoadService;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,12 +27,16 @@ public class LoadHomeProducts extends HttpServlet {
         JsonObject responseObject = new JsonObject();
         responseObject.addProperty("status", false);
 
+        DbConnectionTracker.connectionAcquired();
+
         List<HomeProductsDTO> homeProductsList = productLoadService.loadAllProducts();
 
 //        System.out.println(homeProductsList.size());
         responseObject.add("product", gson.toJsonTree(homeProductsList));
         responseObject.addProperty("status", true);
 
+
+        DbConnectionTracker.connectionReleased();
         String responseText = gson.toJson(responseObject);
         response.setContentType("application/json");
         response.getWriter().write(responseText);

@@ -9,6 +9,7 @@ import me.dinuka.tmo.entity.Stock;
 import me.dinuka.tmo.entity.User;
 import me.dinuka.tmo.service.CartService;
 import me.dinuka.tmo.util.RegexValidator;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,8 @@ public class CartSessionBean implements CartService {
 
     @Override
     public String addProductToCart(String productId, String qty, User user) {
+        DbConnectionTracker.connectionAcquired();
+
         Product product = em.find(Product.class, Integer.valueOf(productId));
 
         String stockJpql = "SELECT s FROM Stock s WHERE s.product = :product";

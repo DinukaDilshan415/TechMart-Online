@@ -13,6 +13,8 @@ import me.dinuka.tmo.entity.*;
 import me.dinuka.tmo.service.EmailService;
 import me.dinuka.tmo.util.mailer.Mail;
 import me.dinuka.tmo.util.mailer.MailTemplates;
+import me.dinuka.tmo.util.monitor.MdbMetrics;
+import me.dinuka.tmo.util.monitor.OrderTracker;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -141,13 +143,15 @@ public class CheckOutProcessingMDB implements MessageListener {
                     detailMap.put("productsList", cartList);
 
                     emailService.sendOrderEmail(detailMap, user.getEmail());
-
+                    OrderTracker.orderCompleted();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
 
             }
+            MdbMetrics.messageProcessed();
         } catch (Exception e) {
+            MdbMetrics.messageFailed();
             throw new RuntimeException(e);
         }
     }
