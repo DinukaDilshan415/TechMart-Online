@@ -25,7 +25,6 @@ public class MetricsDTO {
     private int activeMdbPoolCount;
     private int maxMdbPoolSize;
 
-    // Getters and Setters
     public double getAvgResponseTimeMs() { return avgResponseTimeMs; }
     public void setAvgResponseTimeMs(double v) { this.avgResponseTimeMs = v; }
 

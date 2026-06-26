@@ -8,17 +8,14 @@ public class JmsMetrics {
     private static final AtomicInteger totalMessagesReceived = new AtomicInteger(0);
     private static final AtomicInteger failedMessages = new AtomicInteger(0);
 
-    // Call this when a JMS message is sent
     public static void messageSent() {
         totalMessagesSent.incrementAndGet();
     }
 
-    // Call this when a JMS message is received/consumed
     public static void messageReceived() {
         totalMessagesReceived.incrementAndGet();
     }
 
-    // Call this when a JMS message fails
     public static void messageFailed() {
         failedMessages.incrementAndGet();
     }

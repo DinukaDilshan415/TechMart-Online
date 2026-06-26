@@ -15,7 +15,7 @@ public class PerformanceInterceptor {
     private static final AtomicLong totalTime  = new AtomicLong(0);
     private static final AtomicLong callCount  = new AtomicLong(0);
     private static final AtomicLong peakTime   = new AtomicLong(0);
-    private static final AtomicLong minTime    = new AtomicLong(Long.MAX_VALUE); // Added for Min tracking
+    private static final AtomicLong minTime    = new AtomicLong(Long.MAX_VALUE);
     private static final AtomicLong lastCallTime = new AtomicLong(0);
 
     @AroundInvoke
@@ -30,13 +30,11 @@ public class PerformanceInterceptor {
             callCount.incrementAndGet();
             lastCallTime.set(elapsed);
 
-            // Track peak (max) response time
             long currentPeak = peakTime.get();
             if (elapsed > currentPeak) {
                 peakTime.compareAndSet(currentPeak, elapsed);
             }
 
-            // Track lowest (min) response time
             long currentMin = minTime.get();
             while (elapsed < currentMin) {
                 if (minTime.compareAndSet(currentMin, elapsed)) break;

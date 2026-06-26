@@ -11,7 +11,6 @@ public class MdbMetrics {
     private static final AtomicLong lastMinuteCount = new AtomicLong(0);
     private static volatile long windowStart = System.currentTimeMillis();
 
-    // Call this inside your MDB onMessage()
     public static void messageProcessed() {
         totalProcessed.incrementAndGet();
         trackRate();
@@ -21,13 +20,11 @@ public class MdbMetrics {
         failedCount.incrementAndGet();
     }
 
-    // Tracks messages per minute
     private static void trackRate() {
         long now = System.currentTimeMillis();
         long elapsed = now - windowStart;
 
         if (elapsed >= 60_000) {
-            // reset window every minute
             lastMinuteCount.set(1);
             windowStart = now;
         } else {
@@ -35,7 +32,6 @@ public class MdbMetrics {
         }
     }
 
-    // Returns messages processed in current minute window
     public static int getRate() {
         return lastMinuteCount.intValue();
     }
