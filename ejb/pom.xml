@@ -42,6 +42,13 @@
             <version>1.0</version>
             <type>jar</type>
         </dependency>
+        <!-- Source: https://mvnrepository.com/artifact/org.jboss.arquillian.junit5/arquillian-junit5-container -->
+        <dependency>
+            <groupId>org.jboss.arquillian.junit5</groupId>
+            <artifactId>arquillian-junit5-container</artifactId>
+            <version>1.10.0.Final</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
