@@ -15,7 +15,10 @@ public class EmailSessionBean implements EmailService {
     @Override
     public void sendOrderEmail(HashMap<String, Object> orderDetails, String email) {
 
-        System.out.println("Email sent to: " + email);
+        System.out.println("INFO: Email task started...");
+
         Mail.sendMail(email, "Your TechMart-Online order confirmation", new MailTemplates().generateOrderConfirmationEmail(orderDetails));
+
+        System.out.println("INFO: Email task completed.");
     }
 }

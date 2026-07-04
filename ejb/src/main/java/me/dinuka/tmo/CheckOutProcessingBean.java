@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 @Stateless
-public class ChechOutProcessingBean implements CheckoutProcessingService {
+public class CheckOutProcessingBean implements CheckoutProcessingService {
 
     @PersistenceContext(unitName = "TechMartPU")
     private EntityManager em;
