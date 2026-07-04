@@ -8,10 +8,7 @@ import jakarta.jms.Topic;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import me.dinuka.tmo.dto.ProductDTO;
-import me.dinuka.tmo.entity.Brand;
-import me.dinuka.tmo.entity.Product;
-import me.dinuka.tmo.entity.Status;
-import me.dinuka.tmo.entity.SubCategory;
+import me.dinuka.tmo.entity.*;
 import me.dinuka.tmo.service.ProductService;
 import me.dinuka.tmo.util.monitor.JmsMetrics;
 
@@ -20,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.List;
 
 @Singleton
 public class ProductSessionBean implements ProductService {
@@ -96,7 +94,58 @@ public class ProductSessionBean implements ProductService {
 
     @Override
     public String updateProduct(ProductDTO productDTO) {
-        return null;
+        Product product = em.find(Product.class, productDTO.getId());
+
+        if (product != null) {
+            String jpql = "SELECT s FROM Stock s WHERE s.product = :product";
+            List<Stock> stockList = em.createQuery(jpql, Stock.class)
+                    .setParameter("product", product)
+                    .getResultList();
+
+            if (!stockList.isEmpty()) {
+                Stock stock = stockList.get(0);
+
+                if (Integer.valueOf(productDTO.getQty()) < stock.getQty()) {
+                    return "Enter Quantity Than Stock";
+                } else {
+                    product.setDescription(productDTO.getDescription());
+
+                    stock.setQty(Integer.valueOf(productDTO.getQty()));
+
+                    em.merge(product);
+                    em.merge(stock);
+
+                    em.flush();
+
+                    byte[] image = productDTO.getImage();
+
+                    if (image != null && image.length > 0) {
+                        try {
+                            Path targetDir = Paths.get(baseUploadDir, String.valueOf(product.getId()));
+
+                            if (!Files.exists(targetDir)) {
+                                Files.createDirectories(targetDir);
+                            }
+
+                            Path targetFile = targetDir.resolve("image1.png");
+
+                            Files.write(targetFile, image);
+
+                        } catch (IOException e) {
+                            throw new RuntimeException("EJB file storage operation failed", e);
+                        }
+                    }
+
+
+                    return "success";
+                }
+            } else {
+                return "Stock Record Not Found";
+            }
+        } else {
+            return "Product Not Found";
+        }
+
     }
 
     @Override

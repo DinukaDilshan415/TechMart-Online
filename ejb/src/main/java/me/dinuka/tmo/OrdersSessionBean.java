@@ -8,6 +8,7 @@ import jakarta.persistence.PersistenceContext;
 import me.dinuka.tmo.dto.InvoiceItemsSet;
 import me.dinuka.tmo.entity.Invoice;
 import me.dinuka.tmo.entity.InvoiceItems;
+import me.dinuka.tmo.entity.OrderStatus;
 import me.dinuka.tmo.entity.User;
 import me.dinuka.tmo.service.OrdersService;
 
@@ -19,6 +20,12 @@ public class OrdersSessionBean implements OrdersService {
 
     @PersistenceContext(unitName = "TechMartPU")
     private EntityManager em;
+
+    private static final int ORDER_PAID = 1;
+    private static final int ORDER_PENDING = 2;
+    private static final int ORDER_PROCESSING = 3;
+    private static final int ORDER_SHIPPED = 4;
+    private static final int ORDER_DELIVERED = 5;
 
     @Override
     public String loadUserOrders(User user) {
@@ -67,5 +74,50 @@ public class OrdersSessionBean implements OrdersService {
         }
 
         return gson.toJson(ResponseObject);
+    }
+
+    @Override
+    public String updateOrderStatus(String orderId, String newStatus) {
+
+        int statusId = 0;
+
+        if (newStatus.equalsIgnoreCase("Paid")) {
+            statusId = ORDER_PAID;
+        } else if(newStatus.equalsIgnoreCase("Pending")){
+            statusId = ORDER_PENDING;
+        }else if(newStatus.equalsIgnoreCase("Processing")){
+            statusId = ORDER_PROCESSING;
+        }else if(newStatus.equalsIgnoreCase("Shipped")){
+            statusId = ORDER_SHIPPED;
+        }else if(newStatus.equalsIgnoreCase("Delivered")){
+            statusId = ORDER_DELIVERED;
+        }
+
+        if (statusId != 0) {
+            OrderStatus orderStatus = em.find(OrderStatus.class, statusId);
+
+            if (orderStatus == null) {
+                return "Invalid Status";
+            }
+
+            String jpql = "SELECT i FROM Invoice i WHERE i.order_id = :orderId";
+            List<Invoice> invoiceList = em.createQuery(jpql, Invoice.class)
+                    .setParameter("orderId", orderId)
+                    .getResultList();
+
+            if (!invoiceList.isEmpty()) {
+                Invoice invoice = invoiceList.get(0);
+                invoice.setOrderStatus(orderStatus);
+
+                em.merge(invoice);
+
+                return "success";
+            } else {
+                return "Something Wrong With Order ID";
+            }
+        } else {
+            return "Invalid Status";
+        }
+
     }
 }
