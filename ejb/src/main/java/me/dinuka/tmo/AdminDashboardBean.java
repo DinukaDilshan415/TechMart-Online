@@ -8,6 +8,7 @@ import jakarta.persistence.PersistenceContext;
 import me.dinuka.tmo.dto.InvoiceItemsSet;
 import me.dinuka.tmo.entity.*;
 import me.dinuka.tmo.service.AdminDashboardService;
+import me.dinuka.tmo.util.monitor.DbConnectionTracker;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -186,6 +187,36 @@ public class AdminDashboardBean implements AdminDashboardService {
         }
 
         return gson.toJson(ResponseObject);
+    }
+
+    @Override
+    public String getProductsData(Admin admin) {
+        Gson gson = new Gson();
+        JsonObject responseObject = new JsonObject();
+        responseObject.addProperty("status", false);
+
+        if (admin != null) {
+            String productJpql = "SELECT p FROM Product p";
+            List<Product> productList = em.createQuery(productJpql, Product.class)
+                    .getResultList();
+
+            if (!productList.isEmpty()) {
+                String stockJpql = "SELECT s FROM Stock s WHERE s.product IN :products";
+                List<Stock> stockList = em.createQuery(stockJpql, Stock.class)
+                        .setParameter("products", productList)
+                        .getResultList();
+
+                responseObject.add("productList", gson.toJsonTree(productList));
+                responseObject.add("stockList", gson.toJsonTree(stockList));
+                responseObject.addProperty("status", true);
+            }
+
+        } else {
+            responseObject.addProperty("message", "Admin Session Expired");
+        }
+
+        DbConnectionTracker.connectionReleased();
+        return gson.toJson(responseObject);
     }
 
     @Override

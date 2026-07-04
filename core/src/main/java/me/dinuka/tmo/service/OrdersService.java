@@ -6,4 +6,6 @@ import me.dinuka.tmo.entity.User;
 @Remote
 public interface OrdersService {
     String loadUserOrders(User user);
+
+    String updateOrderStatus(String orderId, String status);
 }

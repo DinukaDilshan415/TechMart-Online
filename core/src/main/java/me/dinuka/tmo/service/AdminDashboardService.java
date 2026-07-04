@@ -9,4 +9,5 @@ public interface AdminDashboardService {
     String getOrdersData(Admin admin);
     String getUsersData(Admin admin);
     String getCustomersData(Admin admin);
+    String getProductsData(Admin admin);
 }
