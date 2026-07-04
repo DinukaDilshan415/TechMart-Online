@@ -27,7 +27,7 @@ public class SignIn extends HttpServlet {
     private EntityManager session;
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         DbConnectionTracker.connectionAcquired();
 
         Gson gson = new Gson();

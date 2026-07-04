@@ -16,6 +16,8 @@ public class AlertReceiver extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+        long start = System.nanoTime();
+
         resp.setContentType("text/event-stream");
         resp.setCharacterEncoding("UTF-8");
         resp.setHeader("Cache-Control", "no-cache");
@@ -52,7 +54,9 @@ public class AlertReceiver extends HttpServlet {
                         writer.println();
                         writer.flush();
 
-                        System.out.println("Sent message to client: " + messageBody);
+                        long end = System.nanoTime();
+
+                        System.out.println("INFO: JMS Message Received: in " + ((end - start) / 1_000_000.0) + "ms");
                     }
                 } catch (JMSException e) {
                     System.err.println("Error receiving message: " + e.getMessage());
