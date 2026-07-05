@@ -1,9 +1,11 @@
 package me.dinuka.tmo.servlet;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import me.dinuka.tmo.EnvConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +13,8 @@ import java.nio.file.Files;
 
 @WebServlet("/product-images/*")
 public class ImageServlet extends HttpServlet {
-    private static final String BASE_DIR = "C:/techmart-online-images/";
+
+    private final String BASE_DIR = EnvConfig.get("IMG_BASE_PATH");
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

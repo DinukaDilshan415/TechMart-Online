@@ -81,13 +81,7 @@ public class ReSendAdminVerification extends HttpServlet {
 
                 System.out.println("Verification Code: " + verificationCode);
 
-                //send mail
-//                new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                Mail.sendMail(email, "Admin Account Verification", new MailTemplates().adminVerificationEmail(verificationCode));
-//                    }
-//                }).start();
+                Mail.sendMail(email, "Admin Account Verification", new MailTemplates().adminVerificationEmail(verificationCode));
 
                 ResponseObject.addProperty("status", true);
                 ResponseObject.addProperty("message", "New Verification Code Send");

@@ -120,8 +120,8 @@ public class GetPaymentDetailsBean implements CheckoutService {
                         amount += DELIVERY_FEE;
 
                         //PayHere process
-                        String merahantID = "1223992";
-                        String merchantSecret = "MTY0MDEzMTcwMDEwMzU2OTgxOTQ4ODk4OTcyMTIzNTIxOTI1MzIz";
+                        String merahantID = EnvConfig.get("MERCHANT_ID");
+                        String merchantSecret = EnvConfig.get("MERCHANT_SECRET");
                         String orderID = "#000" + orderId;
                         String currency = "LKR";
                         String formattedAmount = new DecimalFormat("0.00").format(amount);
