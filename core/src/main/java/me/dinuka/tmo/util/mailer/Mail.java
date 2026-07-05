@@ -7,13 +7,14 @@ package me.dinuka.tmo.util.mailer;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import me.dinuka.tmo.EnvConfig;
 
 import java.util.Properties;
 
 public class Mail {
 
-    private static final String APP_EMAIL = "bac2b2b6d3981e"; //dilshandarms@gmail.com
-    private static final String APP_PASSWORD = "ea5e7f4ae3ae9d"; //b7bbc66b2d75b6 - mailtrap
+    private static final String APP_EMAIL = EnvConfig.get("APP_EMAIL");
+    private static final String APP_PASSWORD = EnvConfig.get("EMAIL_APP_PASSWORD");
 
     public static void sendMail(String email, String subject, String htmlContent) {
 
